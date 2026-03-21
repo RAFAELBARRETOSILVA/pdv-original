@@ -31,6 +31,39 @@ export interface Sale {
   createdAt: Date;
 }
 
+export interface DeliveryTier {
+  id: string;
+  fromKm: number;
+  toKm: number;
+  fee: number;
+}
+
+export type OrderStatus = 'pending' | 'preparing' | 'delivering' | 'delivered' | 'cancelled';
+
+export interface OnlineOrder {
+  id: string;
+  customerName: string;
+  customerPhone: string;
+  address: string;
+  distanceKm: number;
+  items: CartItem[];
+  deliveryFee: number;
+  subtotal: number;
+  total: number;
+  paymentMethod: PaymentMethod;
+  status: OrderStatus;
+  createdAt: Date;
+  notes?: string;
+}
+
+export const ORDER_STATUS_LABELS: Record<OrderStatus, string> = {
+  pending: 'Pendente',
+  preparing: 'Preparando',
+  delivering: 'Saiu p/ Entrega',
+  delivered: 'Entregue',
+  cancelled: 'Cancelado',
+};
+
 export const CATEGORIES = [
   'Todos',
   'Lanches',
