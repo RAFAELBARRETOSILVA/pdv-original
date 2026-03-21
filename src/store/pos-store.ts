@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { Product, CartItem, PaymentSplit, Sale } from '@/types/pos';
+import { Product, CartItem, PaymentSplit, Sale, DeliveryTier, OnlineOrder, OrderStatus } from '@/types/pos';
 
 interface PosState {
   products: Product[];
@@ -9,6 +9,9 @@ interface PosState {
   deliveryFee: number;
   discount: number;
   isDelivery: boolean;
+  deliveryTiers: DeliveryTier[];
+  onlineOrders: OnlineOrder[];
+  storeName: string;
   
   // Product actions
   addProduct: (product: Omit<Product, 'id'>) => void;
@@ -28,6 +31,19 @@ interface PosState {
   
   // Finalize
   finalizeSale: (payments: PaymentSplit[]) => void;
+  
+  // Delivery tiers
+  addDeliveryTier: (tier: Omit<DeliveryTier, 'id'>) => void;
+  updateDeliveryTier: (id: string, tier: Partial<DeliveryTier>) => void;
+  removeDeliveryTier: (id: string) => void;
+  getDeliveryFeeByKm: (km: number) => number;
+
+  // Online orders
+  addOnlineOrder: (order: Omit<OnlineOrder, 'id' | 'createdAt' | 'status'>) => void;
+  updateOrderStatus: (id: string, status: OrderStatus) => void;
+  
+  // Store settings
+  setStoreName: (name: string) => void;
   
   // Computed
   getSubtotal: () => number;
@@ -56,6 +72,14 @@ export const usePosStore = create<PosState>()(
       deliveryFee: 0,
       discount: 0,
       isDelivery: false,
+      storeName: 'Minha Loja',
+      deliveryTiers: [
+        { id: '1', fromKm: 0, toKm: 1.5, fee: 3.00 },
+        { id: '2', fromKm: 1.5, toKm: 3, fee: 5.00 },
+        { id: '3', fromKm: 3, toKm: 5, fee: 8.00 },
+        { id: '4', fromKm: 5, toKm: 10, fee: 12.00 },
+      ],
+      onlineOrders: [],
 
       addProduct: (product) => set((state) => ({
         products: [...state.products, { ...product, id: crypto.randomUUID() }],
@@ -127,6 +151,42 @@ export const usePosStore = create<PosState>()(
           isDelivery: false,
         }));
       },
+
+      // Delivery tiers
+      addDeliveryTier: (tier) => set((state) => ({
+        deliveryTiers: [...state.deliveryTiers, { ...tier, id: crypto.randomUUID() }],
+      })),
+
+      updateDeliveryTier: (id, updates) => set((state) => ({
+        deliveryTiers: state.deliveryTiers.map((t) => (t.id === id ? { ...t, ...updates } : t)),
+      })),
+
+      removeDeliveryTier: (id) => set((state) => ({
+        deliveryTiers: state.deliveryTiers.filter((t) => t.id !== id),
+      })),
+
+      getDeliveryFeeByKm: (km) => {
+        const state = get();
+        const tier = state.deliveryTiers.find((t) => km >= t.fromKm && km < t.toKm);
+        if (tier) return tier.fee;
+        // If beyond all tiers, use the last tier's fee
+        const sorted = [...state.deliveryTiers].sort((a, b) => b.toKm - a.toKm);
+        return sorted.length > 0 && km >= sorted[0].toKm ? sorted[0].fee : 0;
+      },
+
+      // Online orders
+      addOnlineOrder: (order) => set((state) => ({
+        onlineOrders: [
+          { ...order, id: crypto.randomUUID(), createdAt: new Date(), status: 'pending' as const },
+          ...state.onlineOrders,
+        ],
+      })),
+
+      updateOrderStatus: (id, status) => set((state) => ({
+        onlineOrders: state.onlineOrders.map((o) => (o.id === id ? { ...o, status } : o)),
+      })),
+
+      setStoreName: (storeName) => set({ storeName }),
 
       getSubtotal: () => {
         const state = get();
