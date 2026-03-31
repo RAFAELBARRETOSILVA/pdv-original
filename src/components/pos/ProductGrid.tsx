@@ -46,28 +46,28 @@ export function ProductGrid() {
       </div>
 
       {/* Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 overflow-y-auto flex-1 pos-scrollbar pb-2">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3 overflow-y-auto flex-1 pos-scrollbar pb-2">
         {filtered.map((product, i) => (
           <button
             key={product.id}
             onClick={() => addToCart(product)}
-            className="bg-card border border-border rounded-xl p-4 text-left hover:shadow-lg hover:border-primary/30 transition-all active:scale-[0.97] group animate-scale-in"
+            className="bg-card border border-border rounded-xl p-3 sm:p-4 text-left hover:shadow-lg hover:border-primary/30 transition-all active:scale-[0.97] group animate-scale-in"
             style={{ animationDelay: `${i * 40}ms` }}
           >
-            <div className="w-full aspect-square rounded-lg bg-secondary/60 mb-3 flex items-center justify-center text-2xl overflow-hidden">
+            <div className="w-full aspect-square rounded-lg bg-secondary/60 mb-2 sm:mb-3 flex items-center justify-center text-2xl overflow-hidden">
               {product.image ? (
                 <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
               ) : (
                 <span className="text-3xl opacity-40">🍔</span>
               )}
             </div>
-            <p className="font-semibold text-sm leading-tight truncate group-hover:text-primary transition-colors">
+            <p className="font-semibold text-xs sm:text-sm leading-tight truncate group-hover:text-primary transition-colors">
               {product.name}
             </p>
             {product.description && (
-              <p className="text-[11px] text-muted-foreground mt-0.5 line-clamp-1">{product.description}</p>
+              <p className="text-[10px] sm:text-[11px] text-muted-foreground mt-0.5 line-clamp-1">{product.description}</p>
             )}
-            <p className="text-primary font-bold text-base mt-2">
+            <p className="text-primary font-bold text-sm sm:text-base mt-1 sm:mt-2">
               R$ {product.price.toFixed(2).replace('.', ',')}
             </p>
           </button>

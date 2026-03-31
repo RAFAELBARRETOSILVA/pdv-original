@@ -16,7 +16,7 @@ export default function Sales() {
   const formatCurrency = (v: number) => `R$ ${v.toFixed(2).replace('.', ',')}`;
 
   return (
-    <div className="p-6 h-full overflow-y-auto pos-scrollbar animate-fade-in">
+    <div className="p-4 md:p-6 h-full overflow-y-auto pos-scrollbar animate-fade-in">
       <h1 className="text-2xl font-bold mb-6">Vendas</h1>
 
       {/* Stats */}
@@ -51,7 +51,7 @@ export default function Sales() {
       </div>
 
       {/* Sales list */}
-      <div className="bg-card border border-border rounded-2xl overflow-hidden">
+      <div className="bg-card border border-border rounded-2xl overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-border bg-secondary/40">
